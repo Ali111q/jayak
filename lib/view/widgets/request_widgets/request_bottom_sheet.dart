@@ -37,7 +37,8 @@ class RequestBottomSheet extends StatelessWidget {
                 Container(
                   height: 50,
                 ),
-                Container(padding: EdgeInsets.only(top:10),
+                Container(
+                  padding: EdgeInsets.only(top: 10),
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20)),
@@ -136,8 +137,12 @@ class RequestBottomSheet extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
-                          
-                         Provider.of<RequestController>(context, listen: false).sendRequest();
+                          Provider.of<RequestController>(context, listen: false)
+                              .sendRequest();
+                          Navigator.of(context)
+                              .pushReplacement(MaterialPageRoute(
+                            builder: (context) => RequestLoadingScreen(),
+                          ));
                         },
                         child: Container(
                           width: MediaQuery.of(context).size.width * 0.97,
@@ -191,7 +196,8 @@ class BottomSheetRequestWidget extends StatelessWidget {
       // constraints: BoxConstraints(minHeight: 140, maxHeight: 180),
       child: GestureDetector(
         onTap: () {
-          Provider.of<RequestController>(context, listen: false).changeSelectedPrice(index);
+          Provider.of<RequestController>(context, listen: false)
+              .changeSelectedPrice(index);
         },
         child: AnimatedContainer(
           duration: Duration(milliseconds: 150),
@@ -200,7 +206,7 @@ class BottomSheetRequestWidget extends StatelessWidget {
           decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(8),
-              border:  index != selectedPrice
+              border: index != selectedPrice
                   ? null
                   : Border.all(color: Color(0xffFF4100)),
               boxShadow: [
@@ -220,13 +226,13 @@ class BottomSheetRequestWidget extends StatelessWidget {
                     children: [
                       Text(
                         price,
-                        style:
-                            TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500),
                       ),
                       Text(
                         'السعر التقريبي',
-                        style:
-                            TextStyle(fontSize: 10, fontWeight: FontWeight.w400),
+                        style: TextStyle(
+                            fontSize: 10, fontWeight: FontWeight.w400),
                       ),
                     ],
                   ),

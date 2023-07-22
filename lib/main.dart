@@ -18,8 +18,8 @@ void main() {
       ChangeNotifierProvider<LanguageController>(
           create: (_) => LanguageController()),
       ChangeNotifierProvider<FoodController>(create: (_) => FoodController()),
-      ChangeNotifierProvider<RequestController>(create: (_) => RequestController()),
-
+      ChangeNotifierProvider<RequestController>(
+          create: (_) => RequestController()),
     ],
     child: const MyApp(),
   ));

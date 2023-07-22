@@ -6,17 +6,17 @@ class Request {
   LatLng? end;
   String? startName;
   String? endName;
-  int type = 1 ;
-int? carType;
+  int type = 1;
+  int? carType;
   Map<String, dynamic>? toJson() {
     if (end != null) {
       return {
         "type": type,
         "car_type": carType,
-         "from_lat" : "33.31551774949114" , 
-    "from_lng" : "44.36647462599496" ,
-    "to_lat" : "33.31551774949114" , 
-    "to_lng" : "44.36647462599496" 
+        "from_lat": start!.latitude,
+        "from_lng": start!.longitude,
+        "to_lat": end!.latitude,
+        "to_lng": end!.longitude
       };
     }
     return null;

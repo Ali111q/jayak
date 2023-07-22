@@ -2,13 +2,15 @@ import 'dart:convert';
 
 import 'dart:math';
 
-
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:jayak/model/request.dart';
 import 'package:jayak/model/request_price.dart';
+import 'package:jayak/model/taxi.dart';
+import 'package:jayak/view/request_loading_screen.dart';
+import 'package:jayak/view/wait_driver_screen.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 import 'package:http/http.dart' as http;
 
@@ -16,7 +18,7 @@ import '../utils/constant.dart';
 
 class RequestController extends ChangeNotifier {
   late GoogleMapController googleMapController;
-
+  late GoogleMapController waitGoogleMapController;
   Request request = Request();
   RequestPrice? price;
   late WebSocket socket;
@@ -25,7 +27,11 @@ class RequestController extends ChangeNotifier {
   RequestState state = RequestState.firstPoint;
   int? selectedPrice;
   CameraUpdate? cameraPosition;
-  void socketConnect(Position pos) {
+  late Taxi taxi;
+  Set<Marker> waitMarkers = {};
+
+  late BuildContext appContext;
+  void socketConnect(Position pos, BuildContext context) {
     // Create a WebSocket client.
     socket = WebSocket(Uri.parse(userConnect(pos)));
 
@@ -34,7 +40,27 @@ class RequestController extends ChangeNotifier {
     socket.messages.listen((message) {
       var json = jsonDecode(message);
       print(message);
+      appContext = context;
+      if (json['state'] == 2) {
+        waitMarkers.add(markers.first);
+        state = RequestState.accepted;
+        taxi = Taxi.fromJson(json);
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => WaitDriverScreen()));
+
+        _changeWaitCamera();
+        waitMarkers
+            .add(Marker(markerId: MarkerId(taxi.id), position: taxi.latLng));
+      } else if (json['state'] == 9) {
+        taxi.latLng = LatLng(json['lat'], json['lng']);
+        waitMarkers.remove(waitMarkers.last);
+        waitMarkers
+            .add(Marker(markerId: MarkerId(taxi.id), position: taxi.latLng));
+
+        _changeWaitCamera();
+      }
     });
+    notifyListeners();
   }
 
   void requestButton(LatLng pos) async {
@@ -87,6 +113,14 @@ class RequestController extends ChangeNotifier {
     LatLngBounds bound = boundsFromLatLngList([points.first, points.last]);
 
     return CameraUpdate.newLatLngBounds(bound, 50);
+  }
+
+  void _changeWaitCamera() {
+    LatLngBounds _bound = boundsFromLatLngList([points.first, taxi.latLng]);
+
+    CameraUpdate _cameraUpdate = CameraUpdate.newLatLngBounds(_bound, 100);
+    waitGoogleMapController.animateCamera(_cameraUpdate);
+    notifyListeners();
   }
 
   MapTarget calculateMapTarget() {
@@ -199,16 +233,38 @@ class RequestController extends ChangeNotifier {
     } else {
       selectedPrice = price;
       request.carType = price;
-
     }
     notifyListeners();
   }
-  void sendRequest(){
-    if (request.carType!= null) {
+
+  void sendRequest() async {
+    if (request.carType != null) {
+      DateTime _time = DateTime.now();
       print('object');
-    _sendMeassage(request.toJson());
-      
+      _sendMeassage(request.toJson());
+      state = RequestState.requested;
+      while (state == RequestState.requested) {
+        if (DateTime.now().difference(_time) <= Duration(minutes: 5)) {
+          await Future.delayed(Duration(minutes: 1));
+          _sendMeassage(request.toJson());
+        } else {
+          state = RequestState.secondPoint;
+          Navigator.of(appContext).pop();
+        }
+      }
+      notifyListeners();
     }
+  }
+
+  void cancelRequest() {
+    _sendMeassage({"type": "2"});
+    state = RequestState.firstPoint;
+    notifyListeners();
+  }
+
+  initWaitMapController(GoogleMapController con) {
+    waitGoogleMapController = con;
+    notifyListeners();
   }
 }
 
@@ -216,6 +272,9 @@ enum RequestState {
   firstPoint,
   secondPoint,
   priceChecked,
+  requested,
+  accepted,
+  inTheHouse,
 }
 
 class MapTarget {

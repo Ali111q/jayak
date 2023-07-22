@@ -14,7 +14,6 @@ import 'package:jayak/view/widgets/point_widget.dart';
 
 import 'package:jayak/view/widgets/request_widgets/request_bottom_sheet.dart';
 import 'package:provider/provider.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_client/web_socket_client.dart';
 
 class RequestScreen extends StatefulWidget {
@@ -36,7 +35,6 @@ class _RequestScreenState extends State<RequestScreen> {
 
   /// this controller use with [GoogleMap] to full control it
   /// you can set this controller by make it = onCreate[Function] value
-
 
   /// checking if the user moving the map for animate courser
   bool isMoving = false;
@@ -64,14 +62,13 @@ class _RequestScreenState extends State<RequestScreen> {
   @override
   Widget build(BuildContext context) {
     RequestController controller = Provider.of<RequestController>(context);
-  Function()? _popHandler = controller.state == RequestState.secondPoint
-                        ? () {
-                            Provider.of<RequestController>(context,
-                                    listen: false)
-                                .clearAllPoints();
-                                _getUserLocation();
-                          }
-                        : null;
+    Function()? _popHandler = controller.state == RequestState.secondPoint
+        ? () {
+            Provider.of<RequestController>(context, listen: false)
+                .clearAllPoints();
+            _getUserLocation();
+          }
+        : null;
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: Stack(children: [
@@ -93,13 +90,14 @@ class _RequestScreenState extends State<RequestScreen> {
           /// in our case I disabled it for creating a custom button with custom ui
           myLocationButtonEnabled: false,
           mapType: MapType.normal,
-          onCameraIdle: () async{
+          onCameraIdle: () async {
             /// when camera stop moving
             /// set [isMoving] false to animate courser to Idle setuation
             setState(() {
               isMoving = false;
             });
-            Provider.of<RequestController>(context, listen: false).changeRequestPoints(_mapPos);
+            Provider.of<RequestController>(context, listen: false)
+                .changeRequestPoints(_mapPos);
           },
           onCameraMoveStarted: () {
             /// when camera is moving
@@ -108,11 +106,10 @@ class _RequestScreenState extends State<RequestScreen> {
               isMoving = true;
             });
           },
-          onCameraMove: (position) async{
+          onCameraMove: (position) async {
             setState(() {
               _mapPos = position.target;
             });
-          
           },
 
           /// setting [GoogleMapContoller]
@@ -131,7 +128,7 @@ class _RequestScreenState extends State<RequestScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   PopWidget(
-                    onTap:_popHandler ,
+                    onTap: _popHandler,
                   ),
                   HomeButtonWidget()
                 ],
@@ -140,69 +137,64 @@ class _RequestScreenState extends State<RequestScreen> {
 
         /// I used this position for pin widgets Floating widgets at the bottom of screen position
         Positioned(bottom: 0, child: _floatingWidget()),
-       if(controller.state == RequestState.firstPoint || controller.state == RequestState.secondPoint) Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AnimatedContainer(
-                  duration: Duration(milliseconds: 200),
-                  width: isMoving ? 20 : 40,
-                  height: isMoving ? 20 : 40,
-                  decoration: BoxDecoration(
-                      color: isMoving
-                          ? Color(0xffFF4100).withOpacity(0.1)
-                          : Colors.transparent,
-                      shape: BoxShape.circle),
-                  child: isMoving
-                      ? Center(
-                          child: Container(
-                              width: 10,
-                              height: 10,
-                              decoration: BoxDecoration(
-                                  color: Color(0xffFF4100),
-                                  shape: BoxShape.circle)),
-                        )
-                      : SvgPicture.asset('assets/svgs/pin.svg')),
-              if (!isMoving)
-                Container(
-                  height: 34,
-                )
-            ],
-          ),
-        )
+        if (controller.state == RequestState.firstPoint ||
+            controller.state == RequestState.secondPoint)
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedContainer(
+                    duration: Duration(milliseconds: 200),
+                    width: isMoving ? 20 : 40,
+                    height: isMoving ? 20 : 40,
+                    decoration: BoxDecoration(
+                        color: isMoving
+                            ? Color(0xffFF4100).withOpacity(0.1)
+                            : Colors.transparent,
+                        shape: BoxShape.circle),
+                    child: isMoving
+                        ? Center(
+                            child: Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                    color: Color(0xffFF4100),
+                                    shape: BoxShape.circle)),
+                          )
+                        : SvgPicture.asset('assets/svgs/pin.svg')),
+                if (!isMoving)
+                  Container(
+                    height: 34,
+                  )
+              ],
+            ),
+          )
       ]),
     );
   }
 
   Widget _floatingWidget() {
-
-
     CameraUpdate? _pos = Provider.of<RequestController>(context).cameraPosition;
-    void _buttonHandler() async{
+    void _buttonHandler() async {
       RequestController _controller =
           Provider.of<RequestController>(context, listen: false);
-          RequestState _requestState = _controller.state;
-_controller.requestButton(_mapPos);
-      if ( _requestState== RequestState.secondPoint) {
+      RequestState _requestState = _controller.state;
+      _controller.requestButton(_mapPos);
+      if (_requestState == RequestState.secondPoint) {
         showModalBottomSheet(
           backgroundColor: Colors.transparent,
           isScrollControlled: true,
-          
           context: context,
           builder: (context) => RequestBottomSheet(),
         ).then((value) {
-         
-    
-            _controller.clearMarker(_mapPos);
-          
+          _controller.clearMarker(_mapPos);
         });
-        print(Provider.of<RequestController>(context, listen: false).cameraPosition);
+        print(Provider.of<RequestController>(context, listen: false)
+            .cameraPosition);
         if (_pos != null) {
-          CameraUpdate _update =_pos;
-         
+          CameraUpdate _update = _pos;
         }
       }
-      
     }
 
     return Column(
@@ -227,11 +219,13 @@ _controller.requestButton(_mapPos);
           selected: false,
           tag: 'start',
         ),
-     if(Provider.of<RequestController>(context).state== RequestState.secondPoint)  PointWidget(
-          context: context,
-          selected: false,
-          tag: 'end',
-        ),
+        if (Provider.of<RequestController>(context).state ==
+            RequestState.secondPoint)
+          PointWidget(
+            context: context,
+            selected: false,
+            tag: 'end',
+          ),
         Container(
           width: MediaQuery.of(context).size.width,
           padding: EdgeInsets.fromLTRB(5, 12, 5, 30),
@@ -263,10 +257,13 @@ _controller.requestButton(_mapPos);
     print(value.heading);
     CameraUpdate _update = CameraUpdate.newCameraPosition(CameraPosition(
         target: LatLng(value.latitude, value.longitude), zoom: 18));
-    Provider.of<RequestController>(context, listen: false).socketConnect(value);
+    Provider.of<RequestController>(context, listen: false)
+        .socketConnect(value, context);
     setState(() {
       userLocation = LatLng(value.latitude, value.longitude);
-      Provider.of<RequestController>(context,listen: false). googleMapController.animateCamera(_update);
+      Provider.of<RequestController>(context, listen: false)
+          .googleMapController
+          .animateCamera(_update);
     });
   }
 }

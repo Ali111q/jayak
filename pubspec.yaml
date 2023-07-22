@@ -50,6 +50,7 @@ dependencies:
   faker: ^2.1.0
   web_socket_client: ^0.1.0-dev.3
   http: ^1.1.0
+  flutter_phone_direct_caller: ^2.1.1
 
 dev_dependencies:
   flutter_test:
