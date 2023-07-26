@@ -5,7 +5,7 @@ class Taxi {
   final String name;
   final String mobile;
   final String image;
-  final String vechileType;
+  final String? vechileType;
   final String? vechileNumber;
   final int price;
   LatLng latLng;

@@ -9,8 +9,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:jayak/model/request.dart';
 import 'package:jayak/model/request_price.dart';
 import 'package:jayak/model/taxi.dart';
-import 'package:jayak/view/request_loading_screen.dart';
 import 'package:jayak/view/wait_driver_screen.dart';
+
 import 'package:web_socket_client/web_socket_client.dart';
 import 'package:http/http.dart' as http;
 
@@ -258,6 +258,12 @@ class RequestController extends ChangeNotifier {
 
   void cancelRequest() {
     _sendMeassage({"type": "2"});
+    state = RequestState.firstPoint;
+    notifyListeners();
+  }
+
+  void cancelRequestAfterAccept() {
+    _sendMeassage({"type": "4"});
     state = RequestState.firstPoint;
     notifyListeners();
   }

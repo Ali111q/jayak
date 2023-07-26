@@ -46,7 +46,7 @@ class _RequestScreenState extends State<RequestScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    Provider.of<RequestController>(context, listen: false).clearAllPoints();
     _getUserLocation();
 
     /// set the asset image as marker icon

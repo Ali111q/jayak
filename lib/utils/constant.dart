@@ -8,4 +8,4 @@ String getPriceUrl(LatLng first, LatLng end) =>
 
 const String socketUrl = 'ws://192.168.0.114:6001';
 String userConnect(Position pos) =>
-    '$socketUrl/user-socket/osamah?lat=${pos.latitude}&lng=${pos.longitude}&token=1|RNRJpdPL2RbHU4KzogQBZoHupV6vLe3q5Mhl7nJ3';
+    '$socketUrl/user-socket/osamah?lat=${pos.latitude}&lng=${pos.longitude}&token=6|3kixmroOBeppQCPDqKdau7QtbG6ROCo5xKsSdYWv';

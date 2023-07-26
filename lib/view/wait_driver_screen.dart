@@ -29,6 +29,8 @@ class _WaitDriverScreenState extends State<WaitDriverScreen>
   @override
   void dispose() {
     _controller.dispose();
+    Provider.of<RequestController>(context, listen: false).clearAllPoints();
+
     super.dispose();
   }
 
@@ -149,7 +151,7 @@ class _WaitDriverScreenState extends State<WaitDriverScreen>
                                   fontSize: 22, fontWeight: FontWeight.w500),
                             ),
                             Text(
-                              _taxi.vechileType,
+                              _taxi.vechileType ?? "elentra",
                               style: TextStyle(
                                   fontSize: 22, fontWeight: FontWeight.w500),
                             ),
@@ -269,7 +271,7 @@ class _WaitDriverScreenState extends State<WaitDriverScreen>
                                   onPressed: () {
                                     Provider.of<RequestController>(context,
                                             listen: false)
-                                        .cancelRequest();
+                                        .cancelRequestAfterAccept();
                                     Navigator.of(context).pop(true);
 
                                     // Perform the action you want here
