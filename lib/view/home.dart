@@ -6,6 +6,7 @@ import 'package:jayak/controller/language_controller.dart';
 import 'package:jayak/data/home_widgets.dart';
 import 'package:jayak/utils/colors.dart';
 import 'package:jayak/utils/words.dart';
+import 'package:jayak/view/widgets/settings_bottomsheet.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -38,12 +39,21 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: MyColors.primary,
                         width: 100,
                       ),
-                      Material(
-                        elevation: 2,
-                        borderRadius: BorderRadius.circular(7),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: SvgPicture.asset('assets/svgs/setting.svg'),
+                      GestureDetector(
+                        onTap: () {
+                          showModalBottomSheet(
+                            
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            context: context, builder:(context) => SettingsButtomSheet(),);
+                        },
+                        child: Material(
+                          elevation: 2,
+                          borderRadius: BorderRadius.circular(7),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: SvgPicture.asset('assets/svgs/setting.svg'),
+                          ),
                         ),
                       )
                     ],

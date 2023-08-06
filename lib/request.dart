@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:jayak/controller/request_controller.dart';
 import 'package:jayak/location_service.dart';
-import 'package:jayak/utils/constant.dart';
 import 'package:jayak/view/widgets/pop.dart';
 import 'package:jayak/view/widgets/point_widget.dart';
 

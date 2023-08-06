@@ -2,11 +2,13 @@ class Meal {
   final int id;
   final String name;
   final int ratign;
-  final  String image;
+  final String image;
   final int price;
   final String stringPrice;
   bool isLiked;
-  final String time;
+  final int minTime;
+  final int maxTime;
+  final double discount;
 
   Meal(
       {required this.id,
@@ -16,19 +18,24 @@ class Meal {
       required this.stringPrice,
       required this.isLiked,
       required this.image,
-      required this.time});
+      required this.minTime,
+      required this.maxTime,
+      required this.discount});
 
   factory Meal.fromJson(Map json) {
     return Meal(
         id: json['id'],
         name: json['name'],
-        ratign: json['ratign'],
+        ratign: json['rating_sum'],
         price: json['price'],
         stringPrice: json['stringPrice'],
         isLiked: json['isLiked'],
-        time: json['time'], image: json['image']);
+        minTime: json['min_time'],
+        image: json['image'],
+        maxTime: json['max_time'],
+        discount: json['discount']);
   }
-void changeIsLiked(){
-  isLiked = !isLiked;
-}
+  void changeIsLiked() {
+    isLiked = !isLiked;
+  }
 }

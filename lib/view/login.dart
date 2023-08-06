@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:jayak/controller/auth_controller.dart';
 import 'package:jayak/utils/colors.dart';
 import 'package:jayak/utils/words.dart';
+import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,49 +16,56 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  
   bool isShow = false;
   Words _words = Words('ar');
-  FocusNode _node = FocusNode();
+  TextEditingController _textController = TextEditingController();
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+                  ToastContext con = ToastContext();
+
+    con.init(context);
     Future.delayed(Duration(seconds: 2)).then((value) {
       setState(() {
         isShow = true;
       });
     });
-    // _node.requestFocus();
+
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MyColors.primary,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            AnimatedContainer(
-              duration: Duration(milliseconds: 300),
-              height: isShow
-                  ? MediaQuery.of(context).size.height * 0.1
-                  : MediaQuery.of(context).size.height * 0.35,
-            ),
-            Hero(
-              tag: 'hero1',
-              child: SvgPicture.asset(
-                'assets/svgs/logo.svg',
-                height: MediaQuery.of(context).size.height * 0.15,
+    return WillPopScope(
+      onWillPop: ()async{
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: MyColors.primary,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                height: isShow
+                    ? MediaQuery.of(context).size.height * 0.1
+                    : MediaQuery.of(context).size.height * 0.35,
               ),
-            ),
-            Container(
-              height: MediaQuery.of(context).viewInsets.bottom == 0
-                  ? MediaQuery.of(context).size.height * 0.15
-                  : MediaQuery.of(context).size.height * 0,
-            ),
-            Hero(
-              tag: 'hero2',
-              child: Container(
+              Hero(
+                tag: 'hero1',
+                child: SvgPicture.asset(
+                  'assets/svgs/logo.svg',
+                  height: MediaQuery.of(context).size.height * 0.15,
+                ),
+              ),
+              Container(
+                height: MediaQuery.of(context).viewInsets.bottom == 0
+                    ? MediaQuery.of(context).size.height * 0.15
+                    : MediaQuery.of(context).size.height * 0,
+              ),
+              Container(
                 height: MediaQuery.of(context).viewInsets.bottom == 0
                     ? MediaQuery.of(context).size.height * 0.6
                     : MediaQuery.of(context).size.height * 0.8,
@@ -106,14 +116,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 height: 40,
                               ),
                               TextField(
-                                textDirection: _words.language == 'ar'
-                                    ? TextDirection.rtl
-                                    : TextDirection.rtl,
-                                focusNode: _node,
+                                textDirection:  TextDirection.rtl,
+                      controller: _textController,
+                      keyboardType: TextInputType.phone,
                                 decoration: InputDecoration(
-                                  hintTextDirection: _words.language == 'ar'
-                                      ? TextDirection.rtl
-                                      : TextDirection.rtl,
+                                  
+                                  hintTextDirection:  TextDirection.rtl,
                                   hintText: _words.loginFieldHint(),
                                   border: OutlineInputBorder(),
                                 ),
@@ -127,7 +135,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ElevatedButton(
                                 onPressed: () {
+                                  Provider.of<AuthController>(context, listen: false).login(_textController.text).then((value) {
+    
                                   Navigator.of(context).pushNamed('/otp');
+                                  }).catchError((e){});
                                 },
                                 style: ElevatedButton.styleFrom(),
                                 child: Container(
@@ -151,9 +162,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

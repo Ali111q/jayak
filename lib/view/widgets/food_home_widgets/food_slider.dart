@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -11,13 +13,33 @@ class FoodSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Meal> meals = Provider.of<FoodController>(context).meals;
+ 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          ...meals.map((e) => FoodSliderWidget(e))
-        ],
+      child: FutureBuilder(
+        future: Provider.of<FoodController>(context, listen: false).getMostSaleFood(),
+        builder: (context, snapshot) {
+          List<Meal>? meals;
+          bool hasError = false;
+           if(snapshot.hasData){
+           Map json =  jsonDecode(snapshot.data!.body);
+           print(json);
+           if (json['status']) {
+             meals = json['data'].map((e)=> Meal.fromJson(e));
+           }else{
+            hasError = true;
+           }
+           }
+           else{
+hasError = true;
+           }
+          return Row(
+            
+            children: [
+             if(!hasError)...meals!.map((e) => FoodSliderWidget(e))
+            ],
+          );
+        }
       ),
     );
   }
@@ -89,7 +111,7 @@ class FoodSliderWidget extends StatelessWidget {
                                   children: [
                                     SvgPicture.asset('assets/svgs/clock.svg'),
                                     Text(
-                                      '10m - 20m',
+                                      'د${meal.minTime} - د${meal.maxTime}',
                                       style: TextStyle(fontSize: 10),
                                     ),
                                   ],
