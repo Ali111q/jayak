@@ -1,10 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:jayak/controller/food_controller.dart';
 import 'package:jayak/view/resturant_screen.dart';
 import 'package:jayak/view/widgets/food_home_widgets/food_slider.dart';
 import 'package:jayak/view/widgets/stars.dart';
+import 'package:provider/provider.dart';
 
+import '../../../location_service.dart';
 import '../food_resturants_widgets/resturant_slider.dart';
 
 class ResturantList extends StatelessWidget {
@@ -20,15 +25,23 @@ class ResturantList extends StatelessWidget {
           color: Colors.black.withOpacity(0.1),
           blurRadius: 10
       )]),
-      child: Column(
-        children: [
-          ResturantWidget(),
-          ResturantWidget(),
-          ResturantWidget(),
-          ResturantWidget(),
-          ResturantWidget(),
-          ResturantWidget(),
-        ],
+      child: FutureBuilder(
+        future: Provider.of<FoodController>(context, listen: false).getNearRestaurants(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            print(snapshot.data!.body);
+          }
+          return Column(
+            children: [
+              ResturantWidget(),
+              ResturantWidget(),
+              ResturantWidget(),
+              ResturantWidget(),
+              ResturantWidget(),
+              ResturantWidget(),
+            ],
+          );
+        }
       ),
     );
   }
@@ -204,4 +217,5 @@ class ResturantWidget extends StatelessWidget {
       ),
     );
   }
+
 }

@@ -1,7 +1,7 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-const String url = 'http://10.0.2.2:8000';
+const String url = 'https://j.app-seen.com';
 
 String getPriceUrl(LatLng first, LatLng end) =>
     'http://10.0.2.2/api/get-price?from_lat=${first.latitude}&from_lng=${first.longitude}&to_lat=${end.latitude}&to_lng=${end.longitude}';
@@ -13,3 +13,6 @@ String userConnect(Position pos) =>
 const String loginUrl = '$url/api/auth/login';
 const String loginCheckUrl = '$url/api/auth/login/check-code';
 const String mostSaleFoodUrl = "$url/api/restaurant/home/most-food-sail";
+String nearResturantUrl (LatLng latLng)=>"$url/api/restaurant/home/near-restaurants?lat=${latLng.latitude}&lng=${latLng.longitude}";
+const String categoryListUrl = "$url/api/restaurant/home/categories";
+const String placeListUrl = '$url/api/restaurant/favorite/place';

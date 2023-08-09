@@ -4,18 +4,18 @@ class Meal {
   final int ratign;
   final String image;
   final int price;
-  final String stringPrice;
+  // final String stringPrice;
   bool isLiked;
   final int minTime;
   final int maxTime;
-  final double discount;
+  final int discount;
 
   Meal(
       {required this.id,
       required this.name,
       required this.ratign,
       required this.price,
-      required this.stringPrice,
+      // required this.stringPrice,
       required this.isLiked,
       required this.image,
       required this.minTime,
@@ -28,8 +28,8 @@ class Meal {
         name: json['name'],
         ratign: json['rating_sum'],
         price: json['price'],
-        stringPrice: json['stringPrice'],
-        isLiked: json['isLiked'],
+
+        isLiked: false,
         minTime: json['min_time'],
         image: json['image'],
         maxTime: json['max_time'],

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,12 +12,27 @@ class FoodFilterSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     List foodFilter = Provider.of<FoodController>(context).foodFilters;
     return SingleChildScrollView( scrollDirection: Axis.horizontal, child: Padding(
       padding: const EdgeInsets.only(left: 20.0),
-      child: Row(children: [
-        ...foodFilter.map((e) => FoodFilterWidget(e))
-      ],),
+      child: FutureBuilder(
+        future: Provider.of<FoodController>(context, listen: false).getCategoryList(),
+        builder: (context, snapshot) {
+          List<FoodFilter>? cats;
+          if (!snapshot.hasError) {
+            if (snapshot.hasData) {
+              Map json = jsonDecode(snapshot.data!.body);
+          if (json['status']) {
+            cats = [...json['data'].map((e)=>FoodFilter.fromJson(e))];
+          }
+            }
+          }
+          return Row(children: [
+          if(cats!=null)  ...cats.map((e) => FoodFilterWidget(e))
+          ],);
+        }
+      ),
     ),);
   }
 }
@@ -55,7 +72,7 @@ class FoodFilterWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(),
-          SvgPicture.asset(filter.image),
+          SvgPicture.network(filter.image),
           Text(filter.name, style: TextStyle(color: Color(0xffFF4100), fontSize: 12),)
         ],),
       ),

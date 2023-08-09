@@ -13,40 +13,37 @@ class FoodSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
- 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: FutureBuilder(
-        future: Provider.of<FoodController>(context, listen: false).getMostSaleFood(),
-        builder: (context, snapshot) {
-          List<Meal>? meals;
-          bool hasError = false;
-           if(snapshot.hasData){
-           Map json =  jsonDecode(snapshot.data!.body);
-           print(json);
-           if (json['status']) {
-             meals = json['data'].map((e)=> Meal.fromJson(e));
-           }else{
-            hasError = true;
-           }
-           }
-           else{
-hasError = true;
-           }
-          return Row(
-            
-            children: [
-             if(!hasError)...meals!.map((e) => FoodSliderWidget(e))
-            ],
-          );
-        }
-      ),
+          future: Provider.of<FoodController>(context, listen: false)
+              .getMostSaleFood(),
+          builder: (context, snapshot) {
+            List<Meal>? meals;
+            bool hasError = false;
+            if (snapshot.hasData) {
+              Map json = jsonDecode(snapshot.data!.body);
+              print(json);
+              if (json['status']) {
+                meals = [...json['data'].map((e) => Meal.fromJson(e))];
+              } else {
+                hasError = true;
+              }
+            } else {
+              hasError = true;
+            }
+            return Row(
+              children: [
+                if (!hasError) ...meals!.map((e) => FoodSliderWidget(e))
+              ],
+            );
+          }),
     );
   }
 }
 
 class FoodSliderWidget extends StatelessWidget {
-   FoodSliderWidget(this.meal, {super.key});
+  FoodSliderWidget(this.meal, {super.key});
   Meal meal;
   @override
   Widget build(BuildContext context) {
@@ -59,8 +56,8 @@ class FoodSliderWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(7)),
       child: Stack(
         children: [
-          Image.asset(
-            meal.image,
+          Image.network(
+            'https://media.istockphoto.com/id/1165063882/photo/restaurant-healthy-food-delivery-in-take-away-boxes.jpg?s=612x612&w=0&k=20&c=IOC4sN-T-cCobmHE13NY_ml27Us6VK81SdTpdoFO2uw=',
             width: MediaQuery.of(context).size.width * 0.46,
             fit: BoxFit.fitWidth,
           ),
@@ -123,12 +120,15 @@ class FoodSliderWidget extends StatelessWidget {
                       ),
                     ),
                     Positioned(
-                      top: 10,
-                      right: 10,
-                      
-                      child: FavorateWidget(meal.isLiked, onTap: () {
-                        Provider.of<FoodController>(context, listen: false).changeIsLiked(meal);
-                      },))
+                        top: 10,
+                        right: 10,
+                        child: FavorateWidget(
+                          meal.isLiked,
+                          onTap: () {
+                            Provider.of<FoodController>(context, listen: false)
+                                .changeIsLiked(meal);
+                          },
+                        ))
                   ],
                 ),
               ))
@@ -139,10 +139,10 @@ class FoodSliderWidget extends StatelessWidget {
 }
 
 class FavorateWidget extends StatelessWidget {
-   FavorateWidget(  this.isLiked,{
+  FavorateWidget(
+    this.isLiked, {
     this.onTap,
     this.radius = 15,
-
     super.key,
   });
   Function()? onTap;
@@ -151,11 +151,17 @@ class FavorateWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:onTap ,
+      onTap: onTap,
       child: CircleAvatar(
         radius: radius,
         backgroundColor: Color(0xffFF4100),
-        child: Center(child:Icon(isLiked?Icons.favorite: Icons.favorite_outline, color: Colors.white,size: radius+4,),),
+        child: Center(
+          child: Icon(
+            isLiked ? Icons.favorite : Icons.favorite_outline,
+            color: Colors.white,
+            size: radius + 4,
+          ),
+        ),
       ),
     );
   }

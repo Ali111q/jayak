@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:jayak/view/profile.dart';
 
 class SettingsButtomSheet extends StatefulWidget {
   const SettingsButtomSheet({super.key});
@@ -13,7 +14,7 @@ class _SettingsButtomSheetState extends State<SettingsButtomSheet> {
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: 380,
+      height: 270,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(30), topRight: Radius.circular(30)),
@@ -32,9 +33,20 @@ class _SettingsButtomSheetState extends State<SettingsButtomSheet> {
             height: 30,
           ),
           BottomSheetWidget(
-              name: 'الملف الشخصي', image: "assets/svgs/person.svg"),
-          BottomSheetWidget(name: 'متوفر', image: "assets/svgs/available.svg"),
-          BottomSheetWidget(name: 'اتصل بنا', image: "assets/svgs/contact.svg")
+            name: 'الملف الشخصي',
+            image: "assets/svgs/person.svg",
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => Profile(),
+              ));
+            },
+          ),
+          BottomSheetWidget(
+            name: 'اتصل بنا',
+            image: "assets/svgs/contact.svg",
+            onTap: () {},
+          ),
+      
         ],
       ),
     );
@@ -42,10 +54,14 @@ class _SettingsButtomSheetState extends State<SettingsButtomSheet> {
 }
 
 class BottomSheetWidget extends StatefulWidget {
-  const BottomSheetWidget({super.key, required this.name, required this.image});
+  BottomSheetWidget(
+      {super.key,
+      required this.name,
+      required this.image,
+      required this.onTap});
   final String name;
   final String image;
-
+  void Function()? onTap;
   @override
   State<BottomSheetWidget> createState() => _BottomSheetWidgetState();
 }
@@ -54,9 +70,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pushNamed('/profile');
-      },
+      onTap: widget.onTap,
       child: Container(
         margin: EdgeInsets.all(7),
         width: MediaQuery.of(context).size.width,
