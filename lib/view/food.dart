@@ -147,7 +147,7 @@ class _PlacesBottomSheetState extends State<PlacesBottomSheet> {
                                                                   FoodController>(
                                                               context)
                                                           .userLocation!,
-                                                      zoom: 5)),
+                                                      zoom: 17)),
                                           Center(
                                             child: SvgPicture.asset(
                                               'assets/svgs/pin.svg',
