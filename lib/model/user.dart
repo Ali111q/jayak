@@ -16,10 +16,10 @@ class User {
       required this.typeNumber,
       required this.typeName});
 
-  factory User.fromJson(Map<String, dynamic> json) {
+  factory User.fromJson(Map<String, dynamic> json, {String? token}) {
     return User(
         id: json['id'],
-        token: json['token'],
+        token: json['token']??token,
         name: json['name'],
         image: json['image'],
         mobile: json['mobile'],

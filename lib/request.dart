@@ -38,13 +38,16 @@ class _RequestScreenState extends State<RequestScreen> {
   //set of markers to put location of user
   //this class is built in dart class works like array
   Set<Marker> _markers = {};
-
+  bool isLoading = true;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<RequestController>(context, listen: false).clearAllPoints();
-    _getUserLocation();
+    _getUserLocation().then((value) {
+      setState(() {
+        isLoading = false;
+      });
+    });
 
     /// set the asset image as marker icon
     BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(12, 12)),
@@ -65,7 +68,10 @@ class _RequestScreenState extends State<RequestScreen> {
                 .clearAllPoints();
             _getUserLocation();
           }
-        : null;
+        : (){
+          Provider.of<RequestController>(context, listen: false).clearAllPoints();
+          Navigator.of(context).pop();
+        };
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: Stack(children: [
@@ -75,7 +81,7 @@ class _RequestScreenState extends State<RequestScreen> {
           /// this is required parameter to pass initial position of map
           /// todo: make this parameter = current user location
           initialCameraPosition:
-              CameraPosition(target: userLocation ?? LatLng(44, 33), zoom: 5),
+              CameraPosition(target: userLocation ?? LatLng(33.2930, 44.4220), zoom: 5),
 
           /// disable zoom control buttons
           zoomControlsEnabled: false,

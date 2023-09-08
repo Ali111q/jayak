@@ -4,10 +4,12 @@ import 'package:jayak/controller/language_controller.dart';
 import 'package:jayak/controller/food_controller.dart';
 import 'package:jayak/controller/request_controller.dart';
 import 'package:jayak/request.dart';
+import 'package:jayak/view/checkout_screen.dart';
 import 'package:jayak/view/home.dart';
 import 'package:jayak/view/login.dart';
 import 'package:jayak/view/otp.dart';
 import 'package:jayak/view/food.dart';
+import 'package:jayak/view/register.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -43,6 +45,7 @@ class _MyAppState extends State<MyApp> {
         .getUserFromShared()
         .then((value) {
           Provider.of<FoodController>(context, listen: false).setToken(value);
+          Provider.of<RequestController>(context, listen: false).setToken(value);
       setState(() {
         _end = true;
       });
@@ -75,11 +78,15 @@ class _MyAppState extends State<MyApp> {
               '/launch': (context) => LoginScreen(),
               '/request': (context) => RequestScreen(),
               '/otp': (context) => OtpScreen(),
-              '/food': (context) => Food()
+              '/food': (context) => Food(),
+              '/register':(context) => Register(),
+              '/checkout':(context) => CheckOutScreen()
             },
+            
             initialRoute: Provider.of<AuthController>(context).isLogedIn()
                 ? '/'
                 : '/launch',
+            // initialRoute: "/register",
           );
   }
 }

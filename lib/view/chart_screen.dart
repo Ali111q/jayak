@@ -1,8 +1,10 @@
 import 'package:card_swiper/card_swiper.dart';
-import 'package:flutter/foundation.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:jayak/controller/food_controller.dart';
+import 'package:jayak/model/cart.dart';
+import 'package:jayak/view/checkout_screen.dart';
 import 'package:jayak/view/order_loading_screen.dart';
 import 'package:jayak/view/widgets/chart_widgets/chart_meal_widget.dart';
 import 'package:jayak/view/widgets/pop.dart';
@@ -21,6 +23,8 @@ class ChartScreen extends StatefulWidget {
 class _ChartScreenState extends State<ChartScreen> {
   @override
   Widget build(BuildContext context) {
+    Cart _cart = Provider.of<FoodController>(context).cart;
+
     Words _words = Provider.of<LanguageController>(context).words;
 
     return Scaffold(
@@ -35,7 +39,7 @@ class _ChartScreenState extends State<ChartScreen> {
             child: SvgPicture.asset(
               'assets/svgs/jayak.svg',
               width: 70,
-              color: Colors.black,
+              // color: Colors.black,
             ),
           ),
           actions: [HomeButtonWidget()],
@@ -55,62 +59,6 @@ class _ChartScreenState extends State<ChartScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        decoration: BoxDecoration(
-                            color: Color(0xffFF4100),
-                            borderRadius: BorderRadius.circular(14)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              SvgPicture.asset(
-                                'assets/svgs/resturant.svg',
-                                color: Colors.white,
-                              ),
-                              Text(
-                                'Ghost',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              Container()
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: 20,
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Color(0xffE2EDF2)),
-                            borderRadius: BorderRadius.circular(14)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              SvgPicture.asset(
-                                'assets/svgs/resturant.svg',
-                                color: Color(0xffFF4100),
-                              ),
-                              Text(
-                                'Ghost',
-                                style: TextStyle(
-                                  color: Color(0xffFF4100),
-                                ),
-                              ),
-                              Container()
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
                   Container(
                     height: 10,
                   ),
@@ -119,25 +67,30 @@ class _ChartScreenState extends State<ChartScreen> {
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(children: [
-                        ChartMealWidget(),
-                        ChartMealWidget(),
-                        ChartMealWidget(),
-                        ChartMealWidget(),
+                        if (_cart.foods.isNotEmpty)
+                          ..._cart.foods.mapIndexed(
+                            (index, e) => ChartMealWidget(meal: e,index: index,),
+                          )
+                        else
+                          Center(
+                            child: Text(
+                              'لا توجد طلبات في السلة',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          )
                       ]),
                     ),
                   ),
-        AdsSwiper(),
-               
+                  AdsSwiper(),
                 ],
               ),
             ),
           ),
         ),
-
         Positioned(
             bottom: 0,
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.31,
+              height: MediaQuery.of(context).size.height * 0.26,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(color: Colors.white),
               child: Column(
@@ -154,77 +107,17 @@ class _ChartScreenState extends State<ChartScreen> {
                             padding: const EdgeInsets.all(10.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '7,000',
-                                  style: TextStyle(
-                                      color: Color(0xff153E73),
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                      shadows: [
-                                        Shadow(
-                                            color:
-                                                Colors.black.withOpacity(0.1),
-                                            offset: Offset(0, 2))
-                                      ]),
-                                ),
-                                Text(
-                                  ':التوصيل',
-                                  style: TextStyle(
-                                      color: Color(0xff153E73),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
-                                      shadows: [
-                                        Shadow(
-                                            color:
-                                                Colors.black.withOpacity(0.1),
-                                            offset: Offset(0, 2))
-                                      ]),
-                                )
-                              ],
+                              children: [],
                             ),
                           ),
+                          
                           Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  '7,000',
-                                  style: TextStyle(
-                                      color: Color(0xff153E73),
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                      shadows: [
-                                        Shadow(
-                                            color:
-                                                Colors.black.withOpacity(0.1),
-                                            offset: Offset(0, 2))
-                                      ]),
-                                ),
-                                Text(
-                                  ':وقت الطلب',
-                                  style: TextStyle(
-                                      color: Color(0xff153E73),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
-                                      shadows: [
-                                        Shadow(
-                                            color:
-                                                Colors.black.withOpacity(0.1),
-                                            offset: Offset(0, 2))
-                                      ]),
-                                )
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '7,000',
+                                  _cart.totalPrice().toString(),
                                   style: TextStyle(
                                       color: Color(0xffFF4100),
                                       fontSize: 16,
@@ -305,7 +198,7 @@ class _ChartScreenState extends State<ChartScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  '5,500 IQD',
+                                  '${_cart.totalPrice()} IQD',
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 20,
@@ -322,8 +215,10 @@ class _ChartScreenState extends State<ChartScreen> {
                     height: 10,
                   ),
                   GestureDetector(
-                    onTap: (){
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder:(context) => OrderLoadingScreen(),) );
+                    onTap: () {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => CheckOutScreen(),
+                      ));
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width * 0.95,
@@ -367,23 +262,24 @@ class _AdsSwiperState extends State<AdsSwiper> {
   @override
   Widget build(BuildContext context) {
     return Container(
-              height: MediaQuery.of(context).size.height * 0.2,
-                    width: MediaQuery.of(context).size.width * 0.95,
+      height: MediaQuery.of(context).size.height * 0.3,
+      width: MediaQuery.of(context).size.width * 0.95,
       child: ClipRRect(
-    borderRadius: BorderRadius.circular(20)
-,
-        child: Swiper(itemCount: 2, itemBuilder: (context, index) => Container(
-                  height: MediaQuery.of(context).size.height * 0.2,
-                    width: MediaQuery.of(context).size.width * 0.95,
-                        decoration: BoxDecoration(
-                        color: Colors.black,
-          borderRadius: BorderRadius.circular(20)
-          ,image:DecorationImage(image: AssetImage('assets/test_images/food_slider.png'), fit: BoxFit.fitWidth)  
-                         ),
-                      ),),
+        borderRadius: BorderRadius.circular(20),
+        child: Swiper(
+          itemCount: 2,
+          itemBuilder: (context, index) => Container(
+            height: MediaQuery.of(context).size.height * 0.2,
+            width: MediaQuery.of(context).size.width * 0.95,
+            decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(20),
+                image: DecorationImage(
+                    image: AssetImage('assets/test_images/food_slider.png'),
+                    fit: BoxFit.fitWidth)),
+          ),
+        ),
       ),
     );
   }
 }
-
-

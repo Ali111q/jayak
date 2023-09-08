@@ -19,7 +19,7 @@ class WaitDriverScreen extends StatefulWidget {
 class _WaitDriverScreenState extends State<WaitDriverScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-
+  bool showMessage = true;
   @override
   void initState() {
     super.initState();
@@ -98,7 +98,46 @@ class _WaitDriverScreenState extends State<WaitDriverScreen>
                 )),
 
             /// I used this position for pin widgets Floating widgets at the bottom of screen position
-            Positioned(bottom: 0, child: _floatingWidget()),
+            Positioned(
+                bottom: 0,
+                child: Column(
+                  children: [
+                    if (showMessage &&
+                        Provider.of<RequestController>(context).state ==
+                            RequestState.inSpot)
+                      Container(
+                          height: 50,
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          decoration: BoxDecoration(
+                              color: Color(0xffFF4100).withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(9)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Container(),
+                              Text(
+                                'وصل السائق الى نقطة الانطلاق',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    showMessage = false;
+                                  });
+                                },
+                                icon: Icon(
+                                  Icons.visibility_off,
+                                  color: Colors.grey,
+                                ),
+                              )
+                            ],
+                          )),
+                    Container(
+                      height: 10,
+                    ),
+                    _floatingWidget(),
+                  ],
+                )),
           ],
         ),
       ),
@@ -244,7 +283,7 @@ class _WaitDriverScreenState extends State<WaitDriverScreen>
                         ],
                       ),
                     ),
-                    GestureDetector(
+                   if(Provider.of<RequestController>(context).state != RequestState.inTravel) GestureDetector(
                       onTap: () {
                         showDialog<bool?>(
                           context: context,

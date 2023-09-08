@@ -1,3 +1,5 @@
+import 'package:jayak/model/restaurant.dart';
+
 class Meal {
   final int id;
   final String name;
@@ -6,9 +8,10 @@ class Meal {
   final int price;
   // final String stringPrice;
   bool isLiked;
-  final int minTime;
-  final int maxTime;
+  final String minTime;
+  final String maxTime;
   final int discount;
+   Restaurant? restaurant; 
 
   Meal(
       {required this.id,
@@ -20,7 +23,7 @@ class Meal {
       required this.image,
       required this.minTime,
       required this.maxTime,
-      required this.discount});
+      required this.discount,  this.restaurant});
 
   factory Meal.fromJson(Map json) {
     return Meal(
@@ -29,11 +32,11 @@ class Meal {
         ratign: json['rating_sum'],
         price: json['price'],
 
-        isLiked: false,
+        isLiked: json['is_favorite'],
         minTime: json['min_time'],
         image: json['image'],
         maxTime: json['max_time'],
-        discount: json['discount']);
+        discount: json['discount'], restaurant:json['restaurant']==null?null: Restaurant.fromJson(json['restaurant']));
   }
   void changeIsLiked() {
     isLiked = !isLiked;

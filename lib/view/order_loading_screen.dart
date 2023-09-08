@@ -1,9 +1,22 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:jayak/controller/food_controller.dart';
+import 'package:provider/provider.dart';
 
-class OrderLoadingScreen extends StatelessWidget {
+class OrderLoadingScreen extends StatefulWidget {
   const OrderLoadingScreen({super.key});
 
+  @override
+  State<OrderLoadingScreen> createState() => _OrderLoadingScreenState();
+}
+
+class _OrderLoadingScreenState extends State<OrderLoadingScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Provider.of<FoodController>(context, listen: false).socketConnect();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -35,12 +35,7 @@ class _ProfileState extends State<Profile> {
             children: [
               Column(
                 children: [
-                  Center(
-                      child: CircleAvatar(
-                    radius: 90,
-                    backgroundImage:
-                        NetworkImage(Faker().image.image(keywords: ["profile"])),
-                  )),
+                 
                     Container(
                     height: 10,
                   ),
@@ -63,7 +58,9 @@ class _ProfileState extends State<Profile> {
                   ),
                 ],
               ),
-              Center(child: TextButton(onPressed: (){}, child: Text('تسجيل خروج', style: TextStyle(fontSize: 20),)))
+              Center(child: TextButton(onPressed: (){Provider.of<AuthController>(context, listen: false).logout();
+              Navigator.of(context).pushNamedAndRemoveUntil('/launch', (route) => false);
+              }, child: Text('تسجيل خروج', style: TextStyle(fontSize: 20),)))
             ],
           ),
         ),

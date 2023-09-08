@@ -29,12 +29,18 @@ class RequestController extends ChangeNotifier {
   CameraUpdate? cameraPosition;
   late Taxi taxi;
   Set<Marker> waitMarkers = {};
+  String? token;
 
   late BuildContext appContext;
+  void setToken(String? token){
+    this.token = token;
+    notifyListeners();
+  }
   void socketConnect(Position pos, BuildContext context) {
-    // Create a WebSocket client.
-    socket = WebSocket(Uri.parse(userConnect(pos)));
+      
 
+    // Create a WebSocket client.
+    socket = WebSocket(Uri.parse(userConnect(LatLng(pos.latitude, pos.longitude), token!)));
     notifyListeners();
 // Listen to messages from the server.
     socket.messages.listen((message) {
@@ -58,6 +64,19 @@ class RequestController extends ChangeNotifier {
             .add(Marker(markerId: MarkerId(taxi.id), position: taxi.latLng));
 
         _changeWaitCamera();
+      }
+      else if (json['state'] == 5) {
+        state = RequestState.inSpot;
+        notifyListeners();
+      }
+      else if (json['state'] == 6) {
+        state = RequestState.inTravel;
+        notifyListeners();
+      }
+      else if (json['state'] == 7) {
+        state = RequestState.firstPoint;
+        Navigator.of(context).pop();
+        notifyListeners();
       }
     });
     notifyListeners();
@@ -92,7 +111,7 @@ class RequestController extends ChangeNotifier {
     Marker _marker = Marker(
       markerId: MarkerId(pos.latitude.toString()),
       icon: await BitmapDescriptor.fromAssetImage(
-          ImageConfiguration.empty, 'assets/images/crosshair.png'),
+          ImageConfiguration(size: Size(100, 100)), 'assets/images/pin2.png'),
       position: pos,
     );
     markers.add(_marker);
@@ -155,7 +174,7 @@ class RequestController extends ChangeNotifier {
 
   Future<void> getPrice() async {
     http.Response _res =
-        await http.get(Uri.parse(getPriceUrl(points.first, points.last)));
+        await http.get(Uri.parse(getPriceUrl(points.first, points.last),));
     print('object');
 
     print(_res.statusCode);
@@ -280,7 +299,9 @@ enum RequestState {
   priceChecked,
   requested,
   accepted,
-  inTheHouse,
+  inSpot,
+  inTravel,
+  finishTrip
 }
 
 class MapTarget {

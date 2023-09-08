@@ -12,8 +12,6 @@ class FoodFilterSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    List foodFilter = Provider.of<FoodController>(context).foodFilters;
     return SingleChildScrollView( scrollDirection: Axis.horizontal, child: Padding(
       padding: const EdgeInsets.only(left: 20.0),
       child: FutureBuilder(
@@ -23,13 +21,14 @@ class FoodFilterSlider extends StatelessWidget {
           if (!snapshot.hasError) {
             if (snapshot.hasData) {
               Map json = jsonDecode(snapshot.data!.body);
-          if (json['status']) {
+          if (json['status']==true) {
             cats = [...json['data'].map((e)=>FoodFilter.fromJson(e))];
+            Provider.of<FoodController>(context, listen: false).addFilters(cats);
           }
             }
           }
           return Row(children: [
-          if(cats!=null)  ...cats.map((e) => FoodFilterWidget(e))
+          if(cats!=null)  ...cats.map((e) => FoodFilterWidget(e))else FoodFilterWidget(FoodFilter(id: 0, image: 'assets/svgs/jayak.svg', name: 'jayak'))
           ],);
         }
       ),
@@ -72,7 +71,7 @@ class FoodFilterWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(),
-          SvgPicture.network(filter.image),
+          filter.name=='jayak'? SvgPicture.asset(filter.image) :SvgPicture.network(filter.image),
           Text(filter.name, style: TextStyle(color: Color(0xffFF4100), fontSize: 12),)
         ],),
       ),

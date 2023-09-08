@@ -21,7 +21,7 @@ class FoodSlider extends StatelessWidget {
           builder: (context, snapshot) {
             List<Meal>? meals;
             bool hasError = false;
-            if (snapshot.hasData) {
+            if (snapshot.data !=null) {
               Map json = jsonDecode(snapshot.data!.body);
               print(json);
               if (json['status']) {

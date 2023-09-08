@@ -1,8 +1,10 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:jayak/controller/food_controller.dart';
 import 'package:jayak/layout/food_layout.dart';
+import 'package:jayak/model/search.dart';
 import 'package:jayak/view/widgets/food_home_widgets/food_search.dart';
 import 'package:jayak/view/widgets/navbar.dart';
 import 'package:jayak/view/widgets/pop.dart';
@@ -25,6 +27,7 @@ class _FoodState extends State<Food> {
     super.initState();
     Provider.of<FoodController>(context, listen: false).getPlaceList();
   }
+
   @override
   Widget build(BuildContext context) {
     dynamic _currentLayout =
@@ -70,6 +73,7 @@ class _FoodState extends State<Food> {
                 delegate: SliverChildListDelegate([
               FoodSearch(
                 hint: _words.searchhint(),
+                searchType: SearchType.restaurant,
               ),
             ])),
           if (_currenIndex != 4)
@@ -117,9 +121,28 @@ class _PlacesBottomSheetState extends State<PlacesBottomSheet> {
               'لمشاهدة المطاعم الملائمة حدد موقعك',
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
-            ...Provider.of<FoodController>(context).places.map((e)=> PlaceWidget(),)
-            , TextButton(
+            Expanded(
+              child: ListView(shrinkWrap: true, children: [
+                ...Provider.of<FoodController>(context).places.mapIndexed(
+                      (i, e) => PlaceWidget(
+                          name: e['name'],
+                          isSelected: Provider.of<FoodController>(context)
+                                  .selectedPlace ==
+                              i,
+                          index: i),
+                    ),
+              ]),
+            ),
+            TextButton(
                 onPressed: () async {
+                  FocusNode _focusNode = FocusNode();
+                  TextEditingController _controller = TextEditingController();
+                  LatLng latLng=  Provider.of<
+                                                                    FoodController>(
+                                                                context, listen: false)
+                                                            .userLocation ??
+                                                        LatLng(33.31498698601621,
+                                                            44.36589724718807); 
                   showDialog(
                       context: context,
                       builder: (context) => Dialog(
@@ -129,47 +152,71 @@ class _PlacesBottomSheetState extends State<PlacesBottomSheet> {
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(20)),
                               height: MediaQuery.of(context).size.height * 0.8,
-                              child: Column(
-                                children: [
-                                  Container(
-                                    // width: MediaQuery.of(context).size.width * 0.3,
-                                    height: MediaQuery.of(context).size.height *
-                                        0.6,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: Stack(
-                                        fit: StackFit.expand,
-                                        children: [
-                                          GoogleMap(
-                                              initialCameraPosition:
-                                                  CameraPosition(
-                                                      target: Provider.of<
-                                                                  FoodController>(
-                                                              context)
-                                                          .userLocation!,
-                                                      zoom: 17)),
-                                          Center(
-                                            child: SvgPicture.asset(
-                                              'assets/svgs/pin.svg',
-                                              width: 30,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      // width: MediaQuery.of(context).size.width * 0.3,
+                                      height: MediaQuery.of(context).size.height *
+                                          0.6,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: Stack(
+                                          fit: StackFit.expand,
+                                          children: [
+                                            GoogleMap(
+                                              onCameraMove: (position) {
+                                             
+                                                  latLng = position.target;
+                                               
+                                              },
+                                                initialCameraPosition: CameraPosition(
+                                                    target: Provider.of<
+                                                                    FoodController>(
+                                                                context)
+                                                            .userLocation ??
+                                                        LatLng(33.31498698601621,
+                                                            44.36589724718807),
+                                                    zoom: 17)),
+                                            Center(
+                                              child: SvgPicture.asset(
+                                                'assets/svgs/pin.svg',
+                                                width: 30,
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: TextField(
-                                      decoration: InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          labelText: 'اسم العنوان'),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: TextField(
+                                        onSubmitted: (value) {
+                                          Provider.of<FoodController>(context, listen: false).addPlace(latLng, _controller.text).then((value) {
+                                            Provider.of<FoodController>(context, listen: false).getPlaceList();
+                                            Navigator.of(context).pop();
+                                          }).catchError((e){
+                                            print(e);
+                                          });
+                                        },
+                                        controller: _controller,
+                                        focusNode:_focusNode ,
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: 'اسم العنوان'),
+                                      ),
                                     ),
-                                  ),
-                                  TextButton(
-                                      onPressed: () {},
-                                      child: Text('اضافة عنوان'))
-                                ],
+                                    TextButton(
+                                        onPressed: () {
+                                          Provider.of<FoodController>(context, listen: false).addPlace(latLng, _controller.text).then((value) {
+                                            Navigator.of(context).pop();
+                                          }).catchError((e){
+                                            print(e);
+                                          });
+                                        },
+                                        child: Text('اضافة عنوان'))
+                                  ],
+                                ),
                               ),
                             ),
                           ));
@@ -183,44 +230,61 @@ class _PlacesBottomSheetState extends State<PlacesBottomSheet> {
 }
 
 class PlaceWidget extends StatelessWidget {
-  const PlaceWidget({
-    super.key,
-  });
-
+  const PlaceWidget(
+      {super.key,
+      required this.name,
+      required this.isSelected,
+      required this.index});
+  final String name;
+  final bool isSelected;
+  final int index;
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
-        height: 50,
-        decoration: BoxDecoration(
-            border: Border.all(),
-            borderRadius: BorderRadius.circular(11)),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                    border: Border.all(), shape: BoxShape.circle),
-                child: Center(
-                    child: Container(
-                  width: 20,
-                  height: 20,
+      child: GestureDetector(
+        onTap: () {
+          Provider.of<FoodController>(context, listen: false)
+              .changeSelectedPlace(index);
+        },
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 200),
+          width: MediaQuery.of(context).size.width * 0.9,
+          height: 50,
+          decoration: BoxDecoration(
+              border: Border.all(
+                  color: isSelected ? Color(0xffFF4100) : Colors.black),
+              borderRadius: BorderRadius.circular(11)),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: 30,
+                  height: 30,
                   decoration: BoxDecoration(
-                      color: Colors.black, shape: BoxShape.circle),
+                      border: Border.all(
+                          color: isSelected ? Color(0xffFF4100) : Colors.black),
+                      shape: BoxShape.circle),
+                  child: Center(
+                      child: AnimatedContainer(
+                    duration: Duration(milliseconds: 200),
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                        color:
+                            isSelected ? Color(0xffFF4100) : Colors.transparent,
+                        shape: BoxShape.circle),
+                  )),
+                ),
+                Center(
+                    child: Text(
+                  name,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                 )),
-              ),
-              Center(
-                  child: Text(
-                'data',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-              )),
-            ],
+              ],
+            ),
           ),
         ),
       ),
